@@ -3,60 +3,52 @@ A structured SQL database designed for analyzing home credit default risks, ensu
 
 # Home Credit Default Risk Database
 
-## Project Overview
-This project focuses on designing, building, and populating a database to analyze home credit default risks. By following solid database design principles, we ensure the data remains structured, normalized, and consistent. The database is intended for use by banks, loan officers, data analysts, and database administrators to help assess and manage credit risk.
+This project involves the creation of a database related to home credit default risk. The goal is to design, load, and manage a database that is useful in the banking and home credit industry. The database can be utilized by:
 
-## Use Case
-This database is designed to store and manage financial data related to home credit, including past credit history, credit card balances, installment payments, and loan applications. It can be used for:
-- Evaluating credit risk
-- Assessing loan applications
-- Analyzing payment behavior trends
+- Banks by Loan Officers
+- Data Analysts
+- Database Administrators
 
-## Database Schema
-The database consists of six main tables:
-1. **Bureau** - Stores clients' previous credit information reported by credit bureaus.
-2. **Bureau Balance** - Maintains monthly balance details for each credit reported by bureaus.
-3. **Credit Card Balance** - Tracks monthly balance details for credit cards.
-4. **Installment Payments** - Logs payments made for prior installments.
-5. **POS CASH Balance** - Stores monthly balance details for cash loans.
-6. **Previous Application** - Contains information about past loan applications.
+## Database Entities
+The database consists of six tables:
 
-## Database Design & Normalization
-- The database was developed using best practices in relational database design.
-- To maintain efficiency, normalization was enforced, ensuring compliance with **Boyce-Codd Normal Form (BCNF)**.
-- The **Installment Payments** table was split into **Installment Payments Details** and **Installment Payments Header** to remove BCNF violations.
+- **Bureau** - Contains information about previous credit history reported by credit bureaus for clients.
+- **Bureau Balance** - Stores monthly balance information for each credit reported by credit bureaus.
+- **Credit Card Balance** - Maintains monthly balance information for credit cards.
+- **Installment Payments** - Records payments made for previous installments.
+- **POS CASH Balance** - Stores monthly balance information for cash loans.
+- **Previous Application** - Contains information about past loan applications.
 
-## Data Generation & Import
-- **Simulated Data:** The `Faker` library in Python was used to generate realistic financial data.
-- **Data Storage:** Generated data was saved as `.csv` files.
-- **Data Import:** These `.csv` files were then imported into the PostgreSQL database.
+During the database creation, we tested queries, ensured compliance with BCNF principles, and applied database design best practices. The data in the tables was generated using the Faker library in Python.
 
-## Implementation Steps
-1. **Database Creation:**
-   - A PostgreSQL database named `Home_Risk` was set up.
-2. **Table Creation:**
-   - Tables were designed with appropriate `PRIMARY` and `FOREIGN KEY` constraints to enforce relationships.
-3. **Normalization:**
-   - Schema was checked for BCNF compliance, with decomposition applied where necessary.
-4. **Data Generation:**
-   - Used `pandas` and `Faker` to create synthetic but realistic data.
-5. **Data Import:**
-   - The generated `.csv` files were imported using PostgreSQL's `COPY` or `INSERT` commands.
+## Database Creation Process
 
-## Technologies Used
-- **SQL (PostgreSQL)** for database design and querying.
-- **Python (Pandas, Faker)** for generating sample data.
-- **PgAdmin / PSQL CLI** for managing the database.
+### 1. Database Creation
+- Created a database named **Home Risk**.
 
-## Getting Started
-1. Set up a PostgreSQL database and create tables using the provided schema.
-2. Generate and import data using the included scripts.
-3. Run SQL queries to analyze the data.
+### 2. Creating Tables and Schema
+- Used **CREATE TABLE** queries to set up tables.
+- Defined **Primary Key** and **Foreign Key** constraints for each table.
 
-## Future Enhancements
-- Add stored procedures to automate risk assessment.
-- Integrate machine learning models to predict loan defaults.
-- Optimize indexing strategies to enhance query performance.
+### 3. Ensuring BCNF Compliance
+- Decomposed the **Installment Payments** table into **Installment Payments Details** and **Installment Payments Header** to eliminate BCNF violations.
+- Applied database design principles to ensure normalization.
+
+### 4. Data Generation
+- Used **Pandas** and **Faker** libraries to generate realistic data.
+- Created meaningful values for each attribute.
+- Ensured referential integrity between tables as per the E/R Diagram.
+- Exported generated data to **.csv** files.
+
+### 5. Data Import
+- Imported data into the database using **PgSQL tools**.
+
+## Tools & Technologies Used
+- **PostgreSQL** for database management.
+- **Python** for data generation using Faker.
+- **Pandas** for data handling.
+- **PgSQL tools** for database operations.
+
 
 
 
