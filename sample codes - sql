@@ -1,0 +1,169 @@
+
+
+## **SQL Schema Definitions**
+
+### Bureau Table
+```sql
+CREATE TABLE Bureau (
+    SK_ID_BUREAU INT PRIMARY KEY NOT NULL,
+    SK_ID_CURR INT NOT NULL,
+    CREDIT_ACTIVE VARCHAR(50) NOT NULL,
+    CREDIT_DAY_OVERDUE INT DEFAULT 0,
+    AMT_CREDIT_SUM DECIMAL(18,2),
+    AMT_CREDIT_SUM_DEBT DECIMAL(18,2)
+);
+```
+
+### Bureau_Balance Table
+```sql
+CREATE TABLE Bureau_Balance (
+    SK_ID_BUREAU INT NOT NULL REFERENCES Bureau(SK_ID_BUREAU),
+    MONTHS_BALANCE INT NOT NULL,
+    STATUS CHAR(1),
+    PRIMARY KEY (SK_ID_BUREAU, MONTHS_BALANCE)
+);
+```
+
+### Credit_Card_Balance Table
+```sql
+CREATE TABLE Credit_Card_Balance (
+    SK_ID_CURR INT NOT NULL,
+    SK_ID_PREV INT NOT NULL REFERENCES Previous_Applications(SK_ID_PREV),
+    MONTHS_BALANCE INT NOT NULL,
+    AMT_BALANCE DECIMAL(18,2) DEFAULT 0,
+    AMT_CREDIT_LIMIT_ACTUAL DECIMAL(18,2),
+    PRIMARY KEY (SK_ID_CURR, SK_ID_PREV, MONTHS_BALANCE)
+);
+```
+
+### Installment_Payments_Header Table
+```sql
+CREATE TABLE Installment_Payments_Header (
+    SK_ID_CURR INT NOT NULL,
+    SK_ID_PREV INT NOT NULL,
+    PRIMARY KEY (SK_ID_CURR, SK_ID_PREV)
+);
+```
+
+### Installment_Payments_Details Table
+```sql
+CREATE TABLE Installment_Payments_Details (
+    SK_ID_CURR INT NOT NULL,
+    SK_ID_PREV INT NOT NULL REFERENCES Installment_Payments_Header(SK_ID_CURR, SK_ID_PREV),
+    DAYS_INSTALLMENT INT NOT NULL,
+    AMT_INSTALLMENT DECIMAL(18,2) NOT NULL,
+    PRIMARY KEY (SK_ID_CURR, SK_ID_PREV, DAYS_INSTALLMENT)
+);
+```
+
+### POS_CASH_Balance Table
+```sql
+CREATE TABLE POS_CASH_Balance (
+    SK_ID_CURR INT NOT NULL,
+    SK_ID_PREV INT NOT NULL REFERENCES Previous_Applications(SK_ID_PREV),
+    MONTHS_BALANCE INT NOT NULL,
+    CNT_INSTALMENT INT,
+    CNT_INSTALMENT_FUTURE INT,
+    PRIMARY KEY (SK_ID_CURR, SK_ID_PREV, MONTHS_BALANCE)
+);
+```
+
+### Previous_Applications Table
+```sql
+CREATE TABLE Previous_Applications (
+    SK_ID_CURR INT NOT NULL,
+    SK_ID_PREV INT PRIMARY KEY NOT NULL,
+    NAME_CONTRACT_TYPE VARCHAR(50),
+    AMT_APPLICATION DECIMAL(18,2),
+    AMT_CREDIT DECIMAL(18,2)
+);
+```
+
+---
+
+## **Index Creation**
+
+### Index on Bureau and POS_CASH_Balance Tables
+```sql
+CREATE INDEX idx_bureau_sk_id_curr ON Bureau(SK_ID_CURR);
+CREATE INDEX idx_pos_cash_balance_sk_id_prev ON POS_CASH_Balance(SK_ID_PREV);
+```
+
+---
+
+## **Sample Queries**
+
+### Query Using GROUP BY
+```sql
+SELECT CREDIT_TYPE, AVG(AMT_CREDIT_SUM) AS AvgCreditSum
+FROM Bureau
+GROUP BY CREDIT_TYPE;
+```
+
+### Query Using JOIN
+```sql
+SELECT NAME_PAYMENT_TYPE, CNT_INSTALMENT, MONTHS_BALANCE
+FROM Previous_Applications PA
+INNER JOIN POS_CASH_Balance PCB ON PA.SK_ID_PREV = PCB.SK_ID_PREV;
+```
+
+### Query Using Sub-Query
+```sql
+SELECT B.SK_ID_CURR, B.DAYS_CREDIT 
+FROM Bureau B 
+WHERE B.SK_ID_CURR IN (
+    SELECT PCB.SK_ID_CURR 
+    FROM POS_CASH_Balance PCB 
+    WHERE PCB.CNT_INSTALMENT > 5
+);
+```
+
+### Query Using Sub-Query and GROUP BY
+```sql
+SELECT CREDIT_TYPE, AVG(AMT_CREDIT_SUM) AS AvgCreditSum 
+FROM Bureau 
+WHERE AMT_CREDIT_SUM > (
+    SELECT AVG(AMT_CREDIT_SUM) FROM Bureau
+)
+GROUP BY CREDIT_TYPE;
+```
+
+---
+
+## **Data Manipulation**
+
+### Insert Data Example (Bureau Table)
+```sql
+INSERT INTO Bureau (SK_ID_BUREAU, SK_ID_CURR, CREDIT_ACTIVE, CREDIT_DAY_OVERDUE, AMT_CREDIT_SUM)
+VALUES (24565, 100000, 'Active', 0, 50000.00);
+```
+
+### Update Data Example (Bureau Table)
+```sql
+UPDATE Bureau 
+SET AMT_CREDIT_SUM = 20000.00 
+WHERE SK_ID_BUREAU = 10001;
+```
+
+### Delete Data Example (Bureau Table)
+```sql
+DELETE FROM Bureau 
+WHERE SK_ID_BUREAU = 10001;
+```
+
+---
+
+## **Optimization Suggestions**
+
+### Problematic Query Optimization: Composite Index on Installment_Payments Table
+```sql
+CREATE INDEX idx_installment_payments ON Installment_Payments(SK_ID_CURR, SK_ID_PREV);
+```
+
+---
+
+These SQL scripts cover schema creation for the tables described in the project documentation and include sample queries for analysis and optimization techniques. You can organize these scripts into separate `.sql` files in your GitHub repository for better structure:
+- `schema.sql` for table definitions.
+- `queries.sql` for analysis queries.
+- `optimizations.sql` for index creation and query improvements.
+- `data_manipulation.sql` for insert/update/delete operations.
